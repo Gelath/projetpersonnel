@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello TopicsController!{% endblock %}
+
+{% block body %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Auteur</th>
+            <th>Date de creation</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for topic in topics %}
+        <tr>
+            <td>{{topic.sujet}}</td>
+            <td>{{topic.auteur.username}}</td>
+            <td>{{topic.dateCreation.format('d-m-y')}}</td>
+            <td>{{topic.messages|length}}
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+{% endblock %}
+
