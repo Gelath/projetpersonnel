@@ -21,20 +21,19 @@ class TopicsController extends AbstractController
     {
         return $this->render('topics/index.html.twig', [
             'topics' => $topics->findAll(),
+            // 'topics' => $topics->findBy(['id'], ['dateCreation' => 'ASC']),
             'title'  => 'Topics'
         ]);
     }
     
     /**
-     * @Route("topics/edit/{id}", name="topics_edit", methods={"GET"})
+     * @Route("topics/edit/{id}", name="topics_edit")
      */
     public function edit(Topics $topics, Request $request, ObjectManager $manager): Response {
 
 
         $form = $this->createForm(TopicsType::class, $topics);
         $form->handleRequest($request);
-
-        $form->remove('firstMessage');
 
         if ($form->isSubmitted() && $form->isValid()) {
             
@@ -80,6 +79,17 @@ class TopicsController extends AbstractController
         return $this->render('topics/new.html.twig', [
             'form' => $form->createView(),
             'title' => 'Topics'
+        ]);
+    }
+
+    /**
+     * @Route("topics/show/{id}", name="topics_show")
+     */
+    public function show (Topics $topics): Reponse {
+
+        return $this->render('topics/show.html.twig', [
+            'topics' => $topics,
+            'title'  => 'Topics'
         ]);
     }
 

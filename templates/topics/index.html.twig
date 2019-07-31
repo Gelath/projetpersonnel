@@ -11,6 +11,9 @@
             <th>Auteur</th>
             <th>Date de creation</th>
             <th>Message</th>
+            {% if is_granted('ADMIN') %}{% endif %}
+            <th colspan='2'>Action</th>
+            
         </tr>
     </thead>
 
@@ -20,7 +23,9 @@
             <td>{{topic.sujet}}</td>
             <td>{{topic.auteur.username}}</td>
             <td>{{topic.dateCreation.format('d-m-y')}}</td>
-            <td>{{topic.messages|length}}
+            <td>{{topic.messages|length}}</td>
+            <td><a href="{{ path('topics_edit', {'id': topic.id}) }}">Modifier</a></td>
+            {# <td><a href="{{ path('topics_delete', {'id': topic.id}) }}">Supprimer</a></td> #}
         </tr>
     {% endfor %}
 

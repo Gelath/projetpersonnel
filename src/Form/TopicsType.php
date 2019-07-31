@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Topics;
 use App\Entity\Message;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,11 +19,22 @@ class TopicsType extends AbstractType
     {
         $builder
             ->add('sujet', TextType::class)
-            ->add('firstMessage', TextareaType::class,[
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+                $verif = $event->getData();
+                $form = $event->getForm();
+     
+                if (!$verif || null === $verif->getId()) {
+                    $form->add('firstMessage', TextareaType::class,[
                 'mapped' => false,  
-            ])
+                ]);
 
-            ->add('submit', SubmitType::class, ['label'=>'Valider', 'attr'=>['class'=>'btn-primary btn-block']])
+                $form->add('submit', SubmitType::class, ['label'=>'Valider', 'attr'=>['class'=>'btn-primary btn-block']]);
+                
+                } else{
+
+                  $form->add('submit', SubmitType::class, ['label'=>'Modifier', 'attr'=>['class'=>'btn-primary btn-block']]);
+                }
+            })
         ;
     }
 
