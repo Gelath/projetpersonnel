@@ -12,10 +12,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
+
+
+/**
+ * @Route("/topics")
+ */
 class TopicsController extends AbstractController
 {
     /**
-     * @Route("/topics", name="topics_index")
+     * @Route("/", name="topics_index")
      */
     public function index(TopicsRepository $topics): Response
     {
@@ -25,44 +30,30 @@ class TopicsController extends AbstractController
             'title'  => 'Topics'
         ]);
     }
-    
+
     /**
-     * @Route("topics/edit/{id}", name="topics_edit")
+     * @Route("/new", name="topics_new")
+     * @Route("/edit/{id}", name="topics_edit")
      */
-    public function edit(Topics $topics, Request $request, ObjectManager $manager): Response {
+    public function new_edit(Topics $topics = null , Message $post = null, Request $request, ObjectManager $manager): Response{
 
-
-        $form = $this->createForm(TopicsType::class, $topics);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            $manager->flush();
-
-            return $this->redirectToRoute('topics_index');
+        if(!$topics){
+            $topics = new Topics;
         }
-
-        return $this->render('topics/edit.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Topics'
-        ]);
-    }
-
-    /**
-     * @Route("topics/new", name="topics_new")
-     */
-    public function new(Request $request, ObjectManager $manager): Response{
-
-        $topics = new Topics;
+        
 
         $form = $this->createForm(TopicsType::class, $topics);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            if($post){
+
+               $post->setContenu($form->get("firstMessage")->getData()); 
+            }
+                
             $post = new Message();
 
-            $post->setContenu($form->get("firstMessage")->getData());
             $post->setSujet($topics);
 
             $topics->setAuteur($this->getUser());
@@ -71,26 +62,41 @@ class TopicsController extends AbstractController
             $manager->persist($topics);
             $manager->persist($post);
             
+            
             $manager->flush();
 
             return $this->redirectToRoute('topics_index');
         }
 
-        return $this->render('topics/new.html.twig', [
-            'form' => $form->createView(),
-            'title' => 'Topics'
+        return $this->render('topics/new_edit.html.twig', [
+            'editMode' => $topics->getId() !== null ,
+            'form'     => $form->createView(),
+            'title'    => 'Topics'
         ]);
     }
 
     /**
-     * @Route("topics/show/{id}", name="topics_show")
+     * @Route("/show/{id}", name="topics_show")
      */
-    public function show (Topics $topics): Reponse {
+    public function show (Topics $topics): Response {
 
         return $this->render('topics/show.html.twig', [
-            'topics' => $topics,
+            'topic' => $topics,
             'title'  => 'Topics'
         ]);
+    }
+
+    /**
+     * @Route("/delete/{id}", name="topics_delete", methods={"DELETE"})
+     */
+    public function delete(Request $request, Topics $topics, ObjectManager $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$topics->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($topics);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('topics_index');
     }
 
     

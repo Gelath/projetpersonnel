@@ -4,6 +4,8 @@
 
 {% block body %}
 
+<a href="{{ path('topics_new') }}">Ajotuer un topcis</a>
+
 <table class="table table-striped">
     <thead>
         <tr>
@@ -20,12 +22,12 @@
     <tbody>
     {% for topic in topics %}
         <tr>
-            <td>{{topic.sujet}}</td>
+            <td><a href="{{ path('topics_show', {'id': topic.id}) }}">{{topic.sujet}}</a></td>
             <td>{{topic.auteur.username}}</td>
             <td>{{topic.dateCreation.format('d-m-y')}}</td>
             <td>{{topic.messages|length}}</td>
             <td><a href="{{ path('topics_edit', {'id': topic.id}) }}">Modifier</a></td>
-            {# <td><a href="{{ path('topics_delete', {'id': topic.id}) }}">Supprimer</a></td> #}
+            <td>{{ include('topics/delete.html.twig', {'id': topic.id}) }}</td>
         </tr>
     {% endfor %}
 

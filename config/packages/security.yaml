@@ -34,9 +34,7 @@ security:
             guard:
                 authenticators:
                     - App\Security\LoginAuthenticator
-            # guard:
-            #     authenticators:
-            #         - App\Security\LoginAuthenticator
+            
             
     role_hierarchy:
         ADMIN: USER
